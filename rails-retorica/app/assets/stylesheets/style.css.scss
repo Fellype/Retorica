@@ -31,6 +31,19 @@ html, body {
   }
 }
 
+.search-result {
+    text-align: center;
+    width: 500px;
+    height: 100px;
+    color: white;
+    overflow: auto;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    z-index: 9997;
+    display: none;
+}
+
 .typeahead{
   background: #fff image-url('close_button.png') no-repeat right -15px center;
   background-size: 10px;

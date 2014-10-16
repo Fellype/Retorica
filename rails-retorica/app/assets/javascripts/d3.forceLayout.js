@@ -29,7 +29,7 @@ d3.custom.forceLayout = function (authors) {
     $('.dropdown-menu a').click(function() {
         $('.ano .label').text($(this).text());
     });
-    
+   
     if($('.dropdown-menu a').text() == "")
         $('.dropdown-menu').remove();
 
@@ -450,6 +450,8 @@ d3.custom.forceLayout = function (authors) {
             .style({
                 'fill-opacity': topicCircleOpacity
             })
+        
+        
 
         sel.select('.topicLabel')
             .transition()
@@ -494,6 +496,16 @@ d3.custom.forceLayout = function (authors) {
     function rTweenSmall (d,i) {
         var sel = d3.select(this.parentNode).select('.depG')
         var i = d3.interpolate(d.r, d._r)
+        return function (t) {
+            sel.each(drawDep)
+            var v = i(t)
+            d.r = v
+            return v
+        }
+    }
+    function rTweenHidden (d,i) {
+        var sel = d3.select(this.parentNode).select('.depG')
+        var i = d3.interpolate(d.r, 0)
         return function (t) {
             sel.each(drawDep)
             var v = i(t)
@@ -758,6 +770,7 @@ d3.custom.forceLayout = function (authors) {
             });
         })
     })
+    
     typeahead.on('typeahead:autocompleted',function(e,data){
         cGroups.each(function(d,i) {            
             d3.select(this).selectAll('.depCircleG').each(function(){
@@ -772,6 +785,79 @@ d3.custom.forceLayout = function (authors) {
             });
         })
     })
+    
+    $('.typeahead').bind("change paste keyup", function(e,data) {
+        var value = $(this).val();
+        var suggestions = [];
+        $('span.tt-suggestions .tt-suggestion').each(function() {
+            suggestions.push($(this).text());
+        });
+        
+        var n = suggestions.length;
+        
+        var result = false;
+        
+        cGroups.each(function(d,i) {  
+            result = false;
+            d3.select(this).selectAll('.depCircleG').each(function(){
+                for(i = 0; i < n; i++) {
+                    if(this.getAttribute('data-nome') == suggestions[i]) {
+                        result = true;
+                    }
+                }                
+            });
+            if (result != true) {
+                var sel = d3.select(this)
+                sel.selectAll('.topicCircle')
+                    .transition()
+                    .duration(200)
+                    .style({
+                        opacity : 0
+                    })
+                sel.select('.topicLabel')
+                    .transition()
+                    .style({
+                        opacity: 0
+                    })                
+            } else {
+                var sel = d3.select(this)
+                sel.selectAll('.topicCircle')
+                    .transition()
+                    .duration(200)
+                    .style({
+                        opacity : 1
+                    })
+                sel.select('.topicLabel')
+                    .transition()
+                    .style({
+                        opacity: 1
+                    })                 
+            }
+            
+            if (value == "") {
+                var sel = d3.select(this)
+                sel.selectAll('.topicCircle')
+                    .transition()
+                    .duration(200)
+                    .style({
+                        opacity : 1
+                    })
+                sel.select('.topicLabel')
+                    .transition()
+                    .style({
+                        opacity: 1
+                    })
+            }           
+            
+        })
+        
+        if (n == 0 && value) {
+            $('.search-result').css('display','block');
+        } else {
+            $('.search-result').css('display','none');
+        }
+    });
+        
     
     
   
